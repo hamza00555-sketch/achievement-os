@@ -29,6 +29,22 @@ npm run test
 npm run build
 ```
 
+## النشر على Vercel
+
+المشروع مجهز للنشر مباشرة من GitHub بدون متغيرات بيئة:
+
+1. في Vercel اختر **Add New → Project**.
+2. استورد مستودع `hamza00555-sketch/achievement-os`.
+3. اترك **Root Directory** على جذر المستودع `./`.
+4. سيتعرف Vercel على **Vite** تلقائيًا.
+5. الإعدادات المثبتة في `vercel.json` هي:
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+6. لا تضف أي Environment Variables لهذه النسخة.
+7. اضغط **Deploy**.
+
+ملف `vercel.json` يتضمن SPA fallback حتى تعمل الروابط المباشرة مستقبلًا، إضافة إلى سياسة cache مناسبة للأصول وملف Service Worker.
+
 ## الخصوصية
 
 البيانات محفوظة في متصفح المستخدم فقط في هذه المرحلة. لا تضع أي مفاتيح أو أسرار داخل المستودع؛ ملفات `.env` و`.env.local` مستثناة من Git.
