@@ -1,0 +1,19 @@
+{
+  "name": "أثر — رصيدك المهني",
+  "short_name": "أثر",
+  "description": "حوّل عملك اليومي إلى منجزات مهنية موثقة وجاهزة للاستخدام.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f1efe8",
+  "theme_color": "#0b100f",
+  "icons": [
+    {
+      "src": "/athar-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
