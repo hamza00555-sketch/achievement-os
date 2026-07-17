@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Check, Copy, FileText, Languages, Plus, Sparkles } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { generateOutput } from '../lib/achievement-engine'
 import type { Achievement, AppView, OutputType } from '../types'
 import { EmptyState } from '../components/EmptyState'
@@ -19,6 +19,7 @@ const outputTypes: { id: OutputType; label: string; hint: string }[] = [
 ]
 
 export function StudioView({ achievements, onNavigate }: StudioViewProps) {
+  const reducedMotion = useReducedMotion()
   const [selectedId, setSelectedId] = useState(achievements[0]?.id ?? '')
   const [outputType, setOutputType] = useState<OutputType>('cv')
   const [language, setLanguage] = useState<'ar' | 'en'>('ar')
@@ -51,11 +52,24 @@ export function StudioView({ achievements, onNavigate }: StudioViewProps) {
         transition={{ duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
       >
         <div>
-          <span className="eyebrow">مركز الصياغات</span>
+          <span className="eyebrow studio-eyebrow">
+            <motion.i
+              animate={reducedMotion ? undefined : { scale: [0.75, 1.25, 0.75], opacity: [0.45, 1, 0.45] }}
+              transition={{ duration: 2.1, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            مركز الصياغات
+          </span>
           <h1>حوّل الإنجاز إلى نص جاهز.</h1>
           <p>اختر الإنجاز ونوع النص. لن يضيف المحرك أرقامًا أو نتائج لم توثّقها.</p>
         </div>
-        <motion.button className="button secondary" onClick={() => onNavigate('capture')} whileTap={{ scale: 0.97 }}><Plus size={17} /> أضف إنجازًا</motion.button>
+        <motion.button className="button secondary" onClick={() => onNavigate('capture')} whileTap={{ scale: 0.97 }}>
+          <motion.span
+            className="button-motion-icon"
+            animate={reducedMotion ? undefined : { rotate: [0, 90, 90, 180], scale: [1, 1.15, 1, 1] }}
+            transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut' }}
+          ><Plus size={17} /></motion.span>
+          أضف إنجازًا
+        </motion.button>
       </motion.header>
 
       <div className="studio-layout">
@@ -65,16 +79,29 @@ export function StudioView({ achievements, onNavigate }: StudioViewProps) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.48, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="panel-title"><FileText size={16} /> الإنجاز الأساسي</span>
+          <span className="panel-title">
+            <motion.span
+              className="panel-title-icon"
+              animate={reducedMotion ? undefined : { y: [0, -2, 0], rotate: [0, -4, 0] }}
+              transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+            ><FileText size={16} /></motion.span>
+            الإنجاز الأساسي
+          </span>
           <div className="source-list">
             {achievements.map((achievement) => (
               <motion.button
                 key={achievement.id}
                 className={selectedId === achievement.id ? 'active' : ''}
                 onClick={() => setSelectedId(achievement.id)}
-                animate={selectedId === achievement.id ? { x: -3, scale: 1.01 } : { x: 0, scale: 1 }}
+                animate={reducedMotion
+                  ? undefined
+                  : selectedId === achievement.id
+                    ? { x: [-2, -5, -2], scale: [1, 1.012, 1] }
+                    : { x: 0, scale: 1 }}
                 whileTap={{ scale: 0.975 }}
-                transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+                transition={selectedId === achievement.id
+                  ? { duration: 3.4, repeat: Infinity, ease: 'easeInOut' }
+                  : { type: 'spring', stiffness: 420, damping: 28 }}
               >
                 <i>{selectedId === achievement.id && <Check size={11} />}</i>
                 <span><strong>{achievement.title}</strong><small>{achievement.project || achievement.company}</small></span>
@@ -100,7 +127,27 @@ export function StudioView({ achievements, onNavigate }: StudioViewProps) {
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: 'spring', stiffness: 440, damping: 27 }}
               >
-                {outputType === type.id && <motion.i className="output-active-surface" layoutId="output-type-active" transition={{ type: 'spring', stiffness: 430, damping: 32 }} />}
+                {outputType === type.id && (
+                  <motion.i
+                    className="output-active-surface"
+                    layoutId="output-type-active"
+                    animate={reducedMotion ? undefined : { scale: [1, 1.025, 1], opacity: [0.86, 1, 0.86] }}
+                    transition={{
+                      layout: { type: 'spring', stiffness: 430, damping: 32 },
+                      duration: 2.7,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                )}
+                {outputType === type.id && (
+                  <motion.i
+                    className="output-active-glint"
+                    aria-hidden="true"
+                    animate={reducedMotion ? undefined : { x: ['-180%', '320%'] }}
+                    transition={{ duration: 2.8, repeat: Infinity, ease: 'linear' }}
+                  />
+                )}
                 <strong>{type.label}</strong><small>{type.hint}</small>
               </motion.button>
             ))}
@@ -114,10 +161,16 @@ export function StudioView({ achievements, onNavigate }: StudioViewProps) {
             transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1], layout: { duration: 0.3 } }}
           >
             <motion.span
+              className="generated-aurora"
+              aria-hidden="true"
+              animate={reducedMotion ? undefined : { x: ['-24%', '48%', '-24%'], y: ['-12%', '22%', '-12%'], scale: [1, 1.22, 1] }}
+              transition={{ duration: 10.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.span
               className="generated-sheen"
               aria-hidden="true"
-              animate={{ x: ['-150%', '280%'] }}
-              transition={{ duration: 3.2, repeat: Infinity, repeatDelay: 1.8, ease: 'easeInOut' }}
+              animate={reducedMotion ? undefined : { left: ['-22%', '118%'] }}
+              transition={{ duration: 4.4, repeat: Infinity, ease: 'linear' }}
             />
             <header>
               <div>
@@ -125,8 +178,10 @@ export function StudioView({ achievements, onNavigate }: StudioViewProps) {
                   key={`${selectedId}-${outputType}`}
                   className="generated-icon"
                   initial={{ scale: 0.55, rotate: -18 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: 'spring', stiffness: 390, damping: 19 }}
+                  animate={reducedMotion ? { scale: 1, rotate: 0 } : { scale: [1, 1.1, 1], rotate: [0, 7, -4, 0], y: [0, -3, 0] }}
+                  transition={reducedMotion
+                    ? { type: 'spring', stiffness: 390, damping: 19 }
+                    : { duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   <Sparkles size={16} />
                 </motion.span>
@@ -152,13 +207,22 @@ export function StudioView({ achievements, onNavigate }: StudioViewProps) {
             </AnimatePresence>
             <footer>
               <span>{output?.[language].length ?? 0} حرفًا</span>
-              <motion.button className={copied ? 'copied' : ''} onClick={copy} whileTap={{ scale: 0.94 }}>{copied ? <Check size={16} /> : <Copy size={16} />}{copied ? 'تم النسخ' : 'نسخ النص'}</motion.button>
+              <motion.button
+                className={copied ? 'copied' : ''}
+                onClick={copy}
+                whileTap={{ scale: 0.94 }}
+                animate={!copied && !reducedMotion ? { y: [0, -2, 0], boxShadow: ['0 0 0 rgba(203,250,100,0)', '0 7px 18px rgba(203,250,100,.12)', '0 0 0 rgba(203,250,100,0)'] } : undefined}
+                transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+              >{copied ? <Check size={16} /> : <Copy size={16} />}{copied ? 'تم النسخ' : 'نسخ النص'}</motion.button>
             </footer>
           </motion.article>
 
           {selected && selected.score < 75 && (
             <motion.div className="quality-warning" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <i>{selected.score}</i>
+              <motion.i
+                animate={reducedMotion ? undefined : { scale: [1, 1.08, 1], rotate: [0, -3, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              >{selected.score}</motion.i>
               <div><strong>النص صحيح، لكن الإنجاز يحتاج إلى توثيق أقوى.</strong><p>أضف نتيجة قابلة للقياس أو دليلًا يدعمها؛ فالمعلومة الموثّقة أهم من الصياغة المنمّقة.</p></div>
             </motion.div>
           )}

@@ -86,7 +86,7 @@ export function CaptureView({ onSave, onCancel, initialAchievement }: CaptureVie
         <button className="icon-button" onClick={goBack} aria-label="رجوع"><ArrowRight size={20} /></button>
         <div className="capture-progress">
           {[1, 2, 3].map((item) => (
-            <span key={item} className={step >= item ? 'active' : ''}>
+            <span key={item} className={`${step >= item ? 'active' : ''} ${step === item ? 'current' : ''}`}>
               <i>{step > item ? <Check size={11} /> : item}</i>
               <small>{item === 1 ? 'التعريف' : item === 2 ? 'التفاصيل' : 'المراجعة'}</small>
             </span>

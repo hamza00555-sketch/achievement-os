@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { ArrowUpLeft, Award, BarChart3, FileWarning, Layers3, Sparkles } from 'lucide-react'
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import type { Achievement, AppView } from '../types'
 import { Reveal } from '../components/MotionSystem'
 
@@ -11,6 +11,7 @@ interface CareerViewProps {
 }
 
 export function CareerView({ achievements, onNavigate, onOpen }: CareerViewProps) {
+  const reducedMotion = useReducedMotion()
   const skills = useMemo(() => {
     const counts = new Map<string, number>()
     achievements.forEach((achievement) => achievement.skills.forEach((skill) => counts.set(skill, (counts.get(skill) ?? 0) + 1)))
@@ -33,17 +34,33 @@ export function CareerView({ achievements, onNavigate, onOpen }: CareerViewProps
       </header>
 
       <Reveal className="career-narrative" y={14}>
-        <div className="narrative-label"><Sparkles size={16} /> أبرز اتجاه في منجزاتك</div>
+        <div className="narrative-label">
+          <motion.span
+            animate={reducedMotion ? undefined : { y: [0, -3, 0], rotate: [0, 8, -5, 0], scale: [1, 1.12, 1] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+          ><Sparkles size={16} /></motion.span>
+          أبرز اتجاه في منجزاتك
+        </div>
         <h2>{topSkills.length ? <>أنت تبني مسارًا يجمع بين <em>{topSkills.join(' × ')}</em></> : 'ابدأ بتسجيل منجزاتك حتى يظهر اتجاه مسارك.'}</h2>
         <p>{topSkills.length ? 'كل إنجاز جديد يعزّز هذا الاتجاه أو يكشف جانبًا مختلفًا من خبرتك. الهدف هو إثبات تخصصك بأعمال واضحة.' : 'بعد توثيق ثلاثة إنجازات، ستبدأ صورة مهاراتك واتجاهك في الظهور.'}</p>
-        <motion.button onClick={() => onNavigate('capture')} whileTap={{ scale: 0.98 }}>أضف إنجازًا جديدًا <ArrowUpLeft size={17} /></motion.button>
+        <motion.button onClick={() => onNavigate('capture')} whileTap={{ scale: 0.98 }}>
+          أضف إنجازًا جديدًا
+          <motion.span
+            animate={reducedMotion ? undefined : { x: [0, -4, 0], y: [0, -3, 0] }}
+            transition={{ duration: 2.1, repeat: Infinity, ease: 'easeInOut' }}
+          ><ArrowUpLeft size={17} /></motion.span>
+        </motion.button>
       </Reveal>
 
       <div className="career-grid">
         <section className="skills-panel">
           <div className="section-heading">
             <div><span className="eyebrow">الأدلة المهارية</span><h2>المهارات المثبتة</h2></div>
-            <span className="panel-icon"><BarChart3 size={18} /></span>
+            <motion.span
+              className="panel-icon"
+              animate={reducedMotion ? undefined : { y: [0, -3, 0], rotate: [0, -5, 0] }}
+              transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
+            ><BarChart3 size={18} /></motion.span>
           </div>
           {skills.length ? (
             <div className="skill-bars">
@@ -59,12 +76,18 @@ export function CareerView({ achievements, onNavigate, onOpen }: CareerViewProps
 
         <aside className="career-aside">
           <article className="career-stat-card">
-            <span><Layers3 size={19} /></span>
+            <motion.span
+              animate={reducedMotion ? undefined : { y: [0, -4, 0], rotate: [0, -5, 0], scale: [1, 1.06, 1] }}
+              transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
+            ><Layers3 size={19} /></motion.span>
             <strong>{achievements.length}</strong>
             <p>إجمالي المنجزات</p>
           </article>
           <article className="career-stat-card accent">
-            <span><Award size={19} /></span>
+            <motion.span
+              animate={reducedMotion ? undefined : { y: [0, -4, 0], rotate: [0, 6, 0], scale: [1, 1.08, 1] }}
+              transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', delay: .35 }}
+            ><Award size={19} /></motion.span>
             <strong>{strongest?.score ?? 0}</strong>
             <p>أقوى درجة جاهزية</p>
           </article>
@@ -74,7 +97,11 @@ export function CareerView({ achievements, onNavigate, onOpen }: CareerViewProps
       <section className="evidence-gaps">
         <div className="section-heading">
           <div><span className="eyebrow">نقاط تحتاج توثيقًا</span><h2>منجزات تستحق تقويتها</h2></div>
-          <span className="panel-icon warning"><FileWarning size={18} /></span>
+          <motion.span
+            className="panel-icon warning"
+            animate={reducedMotion ? undefined : { y: [0, -3, 0], rotate: [0, 5, 0] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+          ><FileWarning size={18} /></motion.span>
         </div>
         {weak.length ? (
           <div className="gap-list">

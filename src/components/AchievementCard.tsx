@@ -1,5 +1,5 @@
 import { ArrowUpLeft, CircleCheck, Clock3, EyeOff, FileWarning, ShieldCheck } from 'lucide-react'
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { formatMonth } from '../lib/achievement-engine'
 import type { Achievement } from '../types'
 import { ScoreRing } from './ScoreRing'
@@ -17,6 +17,7 @@ const statusMeta = {
 }
 
 export function AchievementCard({ achievement, onOpen, compact = false }: AchievementCardProps) {
+  const reducedMotion = useReducedMotion()
   const status = statusMeta[achievement.status]
   const StatusIcon = status.icon
 
@@ -35,7 +36,11 @@ export function AchievementCard({ achievement, onOpen, compact = false }: Achiev
     >
       <div className="achievement-card-top">
         <div className={`status-chip ${status.className}`}>
-          <StatusIcon size={13} />
+          <motion.span
+            className="status-motion-icon"
+            animate={reducedMotion ? undefined : { scale: [1, 1.16, 1], rotate: [0, -6, 4, 0] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: (achievement.score % 5) * 0.16 }}
+          ><StatusIcon size={13} /></motion.span>
           {status.label}
         </div>
         {achievement.isDemo && <span className="demo-chip">تجريبي</span>}

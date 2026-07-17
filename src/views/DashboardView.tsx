@@ -8,7 +8,7 @@ import {
   Plus,
   TrendingUp,
 } from 'lucide-react'
-import { motion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import type { Achievement, AppView } from '../types'
 import { AchievementCard } from '../components/AchievementCard'
 import { EmptyState } from '../components/EmptyState'
@@ -23,6 +23,7 @@ interface DashboardViewProps {
 }
 
 export function DashboardView({ achievements, stats, onNavigate, onOpen }: DashboardViewProps) {
+  const reducedMotion = useReducedMotion()
   const recent = [...achievements].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3)
   const needsWork = achievements.filter((achievement) => achievement.status !== 'ready')
 
@@ -50,7 +51,12 @@ export function DashboardView({ achievements, stats, onNavigate, onOpen }: Dashb
             whileHover={{ x: -3 }}
             whileTap={{ scale: 0.98 }}
           >
-            سجّل إنجازًا الآن <ArrowLeft size={18} />
+            سجّل إنجازًا الآن
+            <motion.span
+              className="hero-action-arrow"
+              animate={reducedMotion ? undefined : { x: [0, -5, 0] }}
+              transition={{ duration: 1.9, repeat: Infinity, ease: 'easeInOut' }}
+            ><ArrowLeft size={18} /></motion.span>
           </motion.button>
           <span className="hero-trust"><LockKeyhole size={13} /> يُحفظ كل شيء على جهازك</span>
         </div>
@@ -72,7 +78,11 @@ export function DashboardView({ achievements, stats, onNavigate, onOpen }: Dashb
               transition={{ duration: 0.42, delay: 0.08 + index * 0.07, ease: [0.22, 1, 0.36, 1] }}
               whileHover={{ y: -3 }}
             >
-              <span className={`stat-icon ${item.tone}`}><Icon size={19} /></span>
+              <motion.span
+                className={`stat-icon ${item.tone}`}
+                animate={reducedMotion ? undefined : { y: [0, -4, 0], rotate: [0, index % 2 === 0 ? -5 : 5, 0], scale: [1, 1.06, 1] }}
+                transition={{ duration: 3.1 + index * 0.45, repeat: Infinity, ease: 'easeInOut', delay: index * 0.18 }}
+              ><Icon size={19} /></motion.span>
               <div><strong>{item.value}<small>{index === 0 ? item.suffix : ''}</small></strong><span>{item.label}</span></div>
               {index > 0 && <small className="stat-aside">{item.suffix}</small>}
             </motion.article>
@@ -126,14 +136,22 @@ export function DashboardView({ achievements, stats, onNavigate, onOpen }: Dashb
           <span className="eyebrow">اقتراح لك</span>
           {needsWork.length ? (
             <>
-              <div className="next-score"><strong>{needsWork[0].score}</strong><small>/100</small></div>
+              <motion.div
+                className="next-score"
+                animate={reducedMotion ? undefined : { scale: [1, 1.04, 1], y: [0, -3, 0] }}
+                transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
+              ><strong>{needsWork[0].score}</strong><small>/100</small></motion.div>
               <h3>أكمل توثيق<br />«{needsWork[0].title}»</h3>
               <p>{needsWork[0].status === 'needs-proof' ? 'أضف دليلًا واحدًا يدعم النتيجة حتى يصبح الإنجاز جاهزًا للاستخدام.' : 'وضّح النتيجة أو أضف رقمًا يبيّن أثر عملك.'}</p>
               <button onClick={() => onOpen(needsWork[0])}>افتح الإنجاز <ArrowUpLeft size={17} /></button>
             </>
           ) : (
             <>
-              <div className="all-ready-mark"><CheckCircle2 size={30} /></div>
+              <motion.div
+                className="all-ready-mark"
+                animate={reducedMotion ? undefined : { y: [0, -4, 0], rotate: [0, 5, -3, 0], scale: [1, 1.07, 1] }}
+                transition={{ duration: 3.4, repeat: Infinity, ease: 'easeInOut' }}
+              ><CheckCircle2 size={30} /></motion.div>
               <h3>منجزاتك الحالية<br />جاهزة للاستخدام.</h3>
               <p>حوّل أقوى إنجاز إلى سطر للسيرة الذاتية أو قصة جاهزة للمقابلة.</p>
               <button onClick={() => onNavigate('studio')}>افتح الصياغات <ArrowUpLeft size={17} /></button>

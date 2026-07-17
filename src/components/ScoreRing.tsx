@@ -11,7 +11,10 @@ export function ScoreRing({ score, size = 'medium', label = true }: ScoreRingPro
   return (
     <div
       className={`score-ring ${size}`}
-      style={{ '--score': `${normalized * 3.6}deg` } as CSSProperties}
+      style={{
+        '--score': `${normalized * 3.6}deg`,
+        '--ring-delay': `${-(normalized % 13) * 0.17}s`,
+      } as CSSProperties}
       aria-label={`درجة الجاهزية ${normalized} من 100`}
     >
       <span>{normalized}</span>
