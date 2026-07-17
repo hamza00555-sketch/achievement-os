@@ -72,7 +72,7 @@ export default function App() {
   return (
     <MotionConfig reducedMotion="user">
       <AppShell view={view} onNavigate={navigate}>
-        <AnimatePresence mode="sync" initial={false}>
+        <AnimatePresence mode="wait" initial={false}>
           <PageTransition key={`${view}-${editingAchievement?.id ?? 'default'}`} viewKey={`${view}-${editingAchievement?.id ?? 'default'}`}>
             {view === 'dashboard' && (
               <DashboardView achievements={achievements} stats={stats} onNavigate={navigate} onOpen={setSelectedAchievement} />
