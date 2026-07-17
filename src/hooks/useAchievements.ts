@@ -9,7 +9,14 @@ function loadAchievements(): Achievement[] {
     const stored = window.localStorage.getItem(STORAGE_KEY)
     if (!stored) return demoAchievements
     const parsed = JSON.parse(stored) as Achievement[]
-    return Array.isArray(parsed) ? parsed : demoAchievements
+    if (!Array.isArray(parsed)) return demoAchievements
+
+    const currentDemo = new Map(demoAchievements.map((achievement) => [achievement.id, achievement]))
+    return parsed.map((achievement) => (
+      achievement.isDemo && currentDemo.has(achievement.id)
+        ? currentDemo.get(achievement.id) as Achievement
+        : achievement
+    ))
   } catch {
     return demoAchievements
   }

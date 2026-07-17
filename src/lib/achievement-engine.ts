@@ -10,11 +10,11 @@ import type {
 
 const metricPattern = /(?:\d+[\d,.]*\s*(?:%|٪|x|×|ساعة|يوم|أسبوع|شهر|ريال|ر\.س|مستخدم|مشروع|قالب|دقيقة))|(?:ضعف|مرتين|ثلاث)/iu
 
-const ownershipLabels: Record<Ownership, { ar: string; en: string }> = {
-  led: { ar: 'قدت', en: 'Led' },
-  'co-led': { ar: 'شاركت في قيادة', en: 'Co-led' },
-  contributed: { ar: 'ساهمت في', en: 'Contributed to' },
-  delivered: { ar: 'نفّذت', en: 'Delivered' },
+const ownershipLabels: Record<Ownership, { arVerb: string; arRole: string; enVerb: string; enRole: string }> = {
+  led: { arVerb: 'قدت', arRole: 'قيادة العمل', enVerb: 'Led', enRole: 'leading the work' },
+  'co-led': { arVerb: 'شاركت في قيادة', arRole: 'المشاركة في قيادة العمل', enVerb: 'Co-led', enRole: 'co-leading the work' },
+  contributed: { arVerb: 'ساهمت في', arRole: 'تقديم مساهمة مؤثرة', enVerb: 'Contributed to', enRole: 'making a significant contribution' },
+  delivered: { arVerb: 'نفّذت', arRole: 'تنفيذ العمل', enVerb: 'Delivered', enRole: 'delivering the work' },
 }
 
 export function splitList(value: string): string[] {
@@ -57,38 +57,38 @@ export function getMissingPrompts(draft: AchievementDraft): MissingPrompt[] {
   if (draft.context.trim().length < 20) {
     prompts.push({
       field: 'context',
-      title: 'وش المشكلة قبل تدخلك؟',
-      hint: 'صف الوضع السابق، التعطّل، أو الفرصة التي لاحظتها.',
+      title: 'ما المشكلة التي عالجها هذا الإنجاز؟',
+      hint: 'وضّح الوضع السابق، أو العائق، أو الفرصة التي لاحظتها.',
     })
   }
 
   if (splitList(draft.actionsText).length < 2) {
     prompts.push({
       field: 'actionsText',
-      title: 'وش سويت أنت تحديدًا؟',
-      hint: 'أضف قرارين أو إجراءين كان لك دور مباشر فيهما.',
+      title: 'ما الذي نفّذته أنت تحديدًا؟',
+      hint: 'أضف قرارين أو إجراءين كنت مسؤولًا عنهما مباشرة.',
     })
   }
 
   if (draft.result.trim().length < 20) {
     prompts.push({
       field: 'result',
-      title: 'وش تغيّر بعد شغلك؟',
-      hint: 'فكّر في الوقت، الجودة، التكلفة، التبنّي أو رضا أصحاب المصلحة.',
+      title: 'ما النتيجة التي تحققت؟',
+      hint: 'فكّر في الوقت، أو الجودة، أو التكلفة، أو الاستخدام، أو رضا أصحاب العلاقة.',
     })
   } else if (!metricPattern.test(draft.result)) {
     prompts.push({
       field: 'result',
-      title: 'هل تقدر تثبت النتيجة برقم؟',
-      hint: 'عدد المشاريع، نسبة التحسن، وقت تم توفيره، أو حجم الاستخدام.',
+      title: 'هل يمكنك دعم النتيجة برقم؟',
+      hint: 'أضف عددًا، أو نسبة، أو مدة، أو قيمة مالية إن كانت متاحة.',
     })
   }
 
   if (splitList(draft.evidenceText).length === 0) {
     prompts.push({
       field: 'evidenceText',
-      title: 'وين الدليل؟',
-      hint: 'رابط، ملف، رسالة شكر، نتيجة قياس، أو اسم شخص يستطيع تأكيد الإنجاز.',
+      title: 'أضف دليلًا على الإنجاز',
+      hint: 'رابط، أو ملف، أو رسالة إشادة، أو نتيجة قياس، أو اسم شخص يمكنه تأكيد الإنجاز.',
     })
   }
 
@@ -146,34 +146,38 @@ export function generateOutput(achievement: Achievement, type: OutputType): Gene
   const project = achievement.project || achievement.title
   const actionsAr = joinArabic(achievement.actions.map(cleanEnd))
   const actionsEn = joinEnglish(achievement.actions.map(cleanEnd))
-  const resultAr = achievement.result ? `، مما أدى إلى ${cleanEnd(achievement.result)}` : ''
-  const resultEn = achievement.result ? `, resulting in ${cleanEnd(achievement.result)}` : ''
+  const projectScopeAr = achievement.project && achievement.project !== achievement.title ? ` ضمن مشروع «${project}»` : ''
+  const projectScopeEn = achievement.project && achievement.project !== achievement.title ? ` for ${project}` : ''
+  const contextAr = cleanEnd(achievement.context || 'تحدٍ قائم يحتاج إلى معالجة')
+  const contextEn = cleanEnd(achievement.context || 'an existing challenge that needed to be addressed')
+  const resultAr = achievement.result ? cleanEnd(achievement.result) : ''
+  const resultEn = achievement.result ? cleanEnd(achievement.result) : ''
 
   const outputs: Record<OutputType, GeneratedOutput> = {
     cv: {
       label: 'سطر للسيرة الذاتية',
-      ar: `${owner.ar} ${achievement.title} ضمن ${project} عبر ${actionsAr}${resultAr}.`,
-      en: `${owner.en} ${achievement.title} for ${project} by ${actionsEn}${resultEn}.`,
+      ar: `${owner.arVerb} ${achievement.title}${projectScopeAr} من خلال ${actionsAr}${resultAr ? `؛ وكانت النتيجة: ${resultAr}` : ''}.`,
+      en: `${owner.enVerb} ${achievement.title}${projectScopeEn} by ${actionsEn}.${resultEn ? ` Outcome: ${resultEn}.` : ''}`,
     },
     executive: {
       label: 'صياغة تنفيذية',
-      ar: `${owner.ar} مبادرة ${achievement.title}، وحوّلت ${cleanEnd(achievement.context || 'احتياجًا قائمًا')} إلى مسار تنفيذي واضح من خلال ${actionsAr}${resultAr}.`,
-      en: `${owner.en} the ${achievement.title} initiative, translating ${cleanEnd(achievement.context || 'an existing need')} into a clear delivery path through ${actionsEn}${resultEn}.`,
+      ar: `${owner.arVerb} مبادرة «${achievement.title}»${projectScopeAr} لمعالجة ${contextAr}. شمل عملي ${actionsAr}.${resultAr ? ` وكانت النتيجة: ${resultAr}.` : ''}`,
+      en: `${owner.enVerb} the ${achievement.title} initiative${projectScopeEn} to address ${contextEn}. My work included ${actionsEn}.${resultEn ? ` Outcome: ${resultEn}.` : ''}`,
     },
     promotion: {
       label: 'ملف ترقية',
-      ar: `في مشروع ${project}، كان دوري ${ownershipLabels[achievement.ownership].ar} ${achievement.title}. عالجت ${cleanEnd(achievement.context || 'التحدي القائم')} من خلال ${actionsAr}. النتيجة: ${cleanEnd(achievement.result || 'الإنجاز ما زال يحتاج توثيق النتيجة')}.`,
-      en: `In ${project}, I ${owner.en.toLowerCase()} ${achievement.title}. I addressed ${cleanEnd(achievement.context || 'the existing challenge')} through ${actionsEn}. Outcome: ${cleanEnd(achievement.result || 'the result still needs to be documented')}.`,
+      ar: `الإنجاز: ${achievement.title}${projectScopeAr}.\nدوري: ${owner.arRole}.\nما نفّذته: ${actionsAr}.\nالأثر: ${resultAr || 'لم تُوثّق النتيجة بعد'}.`,
+      en: `Achievement: ${achievement.title}${projectScopeEn}.\nMy role: ${owner.enRole}.\nWhat I did: ${actionsEn}.\nImpact: ${resultEn || 'The result has not been documented yet'}.`,
     },
     portfolio: {
       label: 'مقدمة للبورتفوليو',
-      ar: `${achievement.title} مشروع بدأ من تحدٍ واضح: ${cleanEnd(achievement.context || 'تطوير تجربة أكثر فاعلية')}. تولّيت ${actionsAr}${resultAr}.`,
-      en: `${achievement.title} began with a clear challenge: ${cleanEnd(achievement.context || 'creating a more effective experience')}. My contribution covered ${actionsEn}${resultEn}.`,
+      ar: `بدأ مشروع «${achievement.title}»${projectScopeAr} لمواجهة ${contextAr}. كان دوري ${owner.arRole}، وشمل عملي ${actionsAr}.${resultAr ? ` وكانت النتيجة: ${resultAr}.` : ' ولا تزال النتيجة بحاجة إلى توثيق.'}`,
+      en: `${achievement.title} began as a response to ${contextEn}. My role involved ${owner.enRole}, including ${actionsEn}.${resultEn ? ` The project resulted in ${resultEn}.` : ' The outcome still needs to be documented.'}`,
     },
     interview: {
       label: 'قصة مقابلة STAR',
-      ar: `الموقف: ${cleanEnd(achievement.context || 'كان هناك تحدٍ يحتاج إلى حل')}.\nالمهمة: ${owner.ar} ${achievement.title}.\nالإجراء: ${actionsAr}.\nالنتيجة: ${cleanEnd(achievement.result || 'تحتاج النتيجة إلى قياس وتوثيق')}.`,
-      en: `Situation: ${cleanEnd(achievement.context || 'There was a challenge that needed to be solved')}.\nTask: ${owner.en} ${achievement.title}.\nAction: ${actionsEn}.\nResult: ${cleanEnd(achievement.result || 'The result still needs measurement and evidence')}.`,
+      ar: `الموقف: ${contextAr}.\nالمهمة: كانت مهمتي ${owner.arRole} في «${achievement.title}».\nالإجراء: ${actionsAr}.\nالنتيجة: ${resultAr || 'لا تزال النتيجة بحاجة إلى قياس وتوثيق'}.`,
+      en: `Situation: ${contextEn}.\nTask: My responsibility was ${owner.enRole} on ${achievement.title}.\nAction: ${actionsEn}.\nResult: ${resultEn || 'The result still needs measurement and evidence'}.`,
     },
   }
 
@@ -181,6 +185,6 @@ export function generateOutput(achievement: Achievement, type: OutputType): Gene
 }
 
 export function formatMonth(date: string): string {
-  if (!date) return 'بدون تاريخ'
+  if (!date) return 'التاريخ غير محدد'
   return new Intl.DateTimeFormat('ar-SA', { month: 'short', year: 'numeric' }).format(new Date(`${date}-01T12:00:00`))
 }

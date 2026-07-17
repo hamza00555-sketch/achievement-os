@@ -7,8 +7,8 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  title = 'مساحتك جاهزة لأول إنجاز',
-  body = 'لا تنتظر التقييم السنوي حتى تحاول تتذكر ماذا فعلت قبل ثمانية أشهر.',
+  title = 'ابدأ بأول إنجاز',
+  body = 'سجّل ما أنجزته الآن، حتى تجد التفاصيل جاهزة عند تحديث سيرتك الذاتية أو الاستعداد للمقابلة.',
   onAction,
 }: EmptyStateProps) {
   return (

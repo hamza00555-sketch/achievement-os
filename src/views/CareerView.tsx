@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import { ArrowUpLeft, Award, BarChart3, FileWarning, Layers3, Sparkles } from 'lucide-react'
+import { motion } from 'motion/react'
 import type { Achievement, AppView } from '../types'
+import { Reveal } from '../components/MotionSystem'
 
 interface CareerViewProps {
   achievements: Achievement[]
@@ -24,23 +26,23 @@ export function CareerView({ achievements, onNavigate, onOpen }: CareerViewProps
     <div className="page career-page">
       <header className="page-header">
         <div>
-          <span className="eyebrow">Career Intelligence</span>
+          <span className="eyebrow">مسارك المهني</span>
           <h1>المسار الذي تصنعه أعمالك.</h1>
-          <p>قراءة مبنية على ما أثبتّه، مو على قائمة مهارات اخترتها عشوائيًا.</p>
+          <p>صورة مبنية على الإنجازات التي وثّقتها، لا على مهارات غير مدعومة بأمثلة.</p>
         </div>
       </header>
 
-      <section className="career-narrative">
-        <div className="narrative-label"><Sparkles size={16} /> الإشارة الأقوى حاليًا</div>
-        <h2>{topSkills.length ? <>أنت تبني مسارًا يجمع بين<br /><em>{topSkills.join(' × ')}</em></> : 'ابدأ بتسجيل منجزاتك حتى يظهر نمط مسارك.'}</h2>
-        <p>{topSkills.length ? 'كل إنجاز جديد إما يقوّي هذه الرواية المهنية أو يكشف اتجاهًا جديدًا. الهدف مو جمع تاقات؛ الهدف إثبات تخصص له وزن.' : 'أول ثلاث بطاقات كافية لبدء قراءة أولية لمهاراتك واتجاهك.'}</p>
-        <button onClick={() => onNavigate('capture')}>أضف دليلًا جديدًا <ArrowUpLeft size={17} /></button>
-      </section>
+      <Reveal className="career-narrative" y={14}>
+        <div className="narrative-label"><Sparkles size={16} /> أبرز اتجاه في منجزاتك</div>
+        <h2>{topSkills.length ? <>أنت تبني مسارًا يجمع بين <em>{topSkills.join(' × ')}</em></> : 'ابدأ بتسجيل منجزاتك حتى يظهر اتجاه مسارك.'}</h2>
+        <p>{topSkills.length ? 'كل إنجاز جديد يعزّز هذا الاتجاه أو يكشف جانبًا مختلفًا من خبرتك. الهدف هو إثبات تخصصك بأعمال واضحة.' : 'بعد توثيق ثلاثة إنجازات، ستبدأ صورة مهاراتك واتجاهك في الظهور.'}</p>
+        <motion.button onClick={() => onNavigate('capture')} whileTap={{ scale: 0.98 }}>أضف إنجازًا جديدًا <ArrowUpLeft size={17} /></motion.button>
+      </Reveal>
 
       <div className="career-grid">
         <section className="skills-panel">
           <div className="section-heading">
-            <div><span className="eyebrow">Skill Evidence</span><h2>المهارات المثبتة</h2></div>
+            <div><span className="eyebrow">الأدلة المهارية</span><h2>المهارات المثبتة</h2></div>
             <span className="panel-icon"><BarChart3 size={18} /></span>
           </div>
           {skills.length ? (
@@ -48,7 +50,7 @@ export function CareerView({ achievements, onNavigate, onOpen }: CareerViewProps
               {skills.slice(0, 8).map(([skill, count], index) => (
                 <div key={skill}>
                   <header><span><i>{String(index + 1).padStart(2, '0')}</i>{skill}</span><b>{count} {count === 1 ? 'دليل' : 'أدلة'}</b></header>
-                  <span className="skill-track"><i style={{ width: `${Math.max((count / maxSkill) * 100, 12)}%` }} /></span>
+                  <span className="skill-track"><motion.i initial={{ width: 0 }} whileInView={{ width: `${Math.max((count / maxSkill) * 100, 12)}%` }} viewport={{ once: true }} transition={{ duration: 0.7, delay: index * 0.05, ease: [0.22, 1, 0.36, 1] }} /></span>
                 </div>
               ))}
             </div>
@@ -71,7 +73,7 @@ export function CareerView({ achievements, onNavigate, onOpen }: CareerViewProps
 
       <section className="evidence-gaps">
         <div className="section-heading">
-          <div><span className="eyebrow">Evidence Gaps</span><h2>منجزات تستحق تقويتها</h2></div>
+          <div><span className="eyebrow">نقاط تحتاج توثيقًا</span><h2>منجزات تستحق تقويتها</h2></div>
           <span className="panel-icon warning"><FileWarning size={18} /></span>
         </div>
         {weak.length ? (

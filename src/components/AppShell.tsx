@@ -10,6 +10,7 @@ import {
   Plus,
   Sparkles,
 } from 'lucide-react'
+import { motion } from 'motion/react'
 import type { AppView } from '../types'
 
 interface AppShellProps {
@@ -27,13 +28,21 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: 'dashboard', label: 'الرئيسية', icon: LayoutDashboard },
   { id: 'library', label: 'المنجزات', icon: Archive },
-  { id: 'studio', label: 'الاستديو', icon: FileOutput },
-  { id: 'career', label: 'مساري', icon: BarChart3 },
+  { id: 'studio', label: 'الصياغات', icon: FileOutput },
+  { id: 'career', label: 'مسارك', icon: BarChart3 },
+]
+
+const mobileNavItems: NavItem[] = [
+  { id: 'dashboard', label: 'الرئيسية', icon: LayoutDashboard },
+  { id: 'library', label: 'المنجزات', icon: Archive },
+  { id: 'capture', label: 'إضافة', icon: Plus },
+  { id: 'studio', label: 'الصياغات', icon: FileOutput },
+  { id: 'career', label: 'مسارك', icon: BarChart3 },
 ]
 
 export function AppShell({ view, onNavigate, children }: AppShellProps) {
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${view === 'capture' ? 'capture-mode' : ''}`}>
       <aside className="sidebar">
         <button className="brand" onClick={() => onNavigate('dashboard')} aria-label="العودة للرئيسية">
           <span className="brand-mark"><Sparkles size={19} strokeWidth={1.8} /></span>
@@ -43,32 +52,33 @@ export function AppShell({ view, onNavigate, children }: AppShellProps) {
           </span>
         </button>
 
-        <button className="primary-capture" onClick={() => onNavigate('capture')}>
+        <motion.button className="primary-capture" onClick={() => onNavigate('capture')} whileTap={{ scale: 0.97 }}>
           <Plus size={19} />
           <span>سجّل إنجازًا</span>
           <kbd><Command size={11} /> K</kbd>
-        </button>
+        </motion.button>
 
         <nav className="side-nav" aria-label="التنقل الرئيسي">
           <span className="nav-eyebrow">مساحة العمل</span>
           {navItems.map(({ id, label, icon: Icon }) => (
-            <button
+            <motion.button
               key={id}
               className={view === id ? 'active' : ''}
               onClick={() => onNavigate(id)}
+              whileTap={{ scale: 0.98 }}
             >
               <Icon size={19} strokeWidth={1.8} />
               <span>{label}</span>
-              {view === id && <i />}
-            </button>
+              {view === id && <motion.i layoutId="side-nav-active" />}
+            </motion.button>
           ))}
         </nav>
 
         <div className="privacy-note">
           <span><LockKeyhole size={17} /></span>
           <div>
-            <strong>خاص بجهازك</strong>
-            <small>لا تُرفع بياناتك لأي سيرفر.</small>
+            <strong>محفوظ على هذا الجهاز</strong>
+            <small>لا تُرسل البيانات خارج المتصفح.</small>
           </div>
         </div>
 
@@ -76,9 +86,8 @@ export function AppShell({ view, onNavigate, children }: AppShellProps) {
           <div className="avatar">ح</div>
           <div>
             <strong>حمزة</strong>
-            <small>مساحة شخصية</small>
+            <small>مساحة محلية</small>
           </div>
-          <button aria-label="إعدادات الحساب">•••</button>
         </div>
       </aside>
 
@@ -87,19 +96,23 @@ export function AppShell({ view, onNavigate, children }: AppShellProps) {
           <span className="brand-mark"><Sparkles size={17} /></span>
           <strong>أثَر</strong>
         </button>
-        <button className="mobile-capture" onClick={() => onNavigate('capture')} aria-label="سجل إنجازًا">
-          <Plus size={20} />
-        </button>
+        <span className="mobile-local"><i /> حفظ محلي</span>
       </header>
 
       <main className="app-content">{children}</main>
 
       <nav className="mobile-nav" aria-label="التنقل الرئيسي للجوال">
-        {navItems.map(({ id, label, icon: Icon }) => (
-          <button key={id} className={view === id ? 'active' : ''} onClick={() => onNavigate(id)}>
-            <Icon size={19} strokeWidth={view === id ? 2.4 : 1.8} />
+        {mobileNavItems.map(({ id, label, icon: Icon }) => (
+          <motion.button
+            key={id}
+            className={`${view === id ? 'active' : ''} ${id === 'capture' ? 'capture-tab' : ''}`}
+            onClick={() => onNavigate(id)}
+            whileTap={{ scale: 0.9 }}
+          >
+            {view === id && id !== 'capture' && <motion.i className="mobile-active-pill" layoutId="mobile-nav-active" />}
+            <span className={id === 'capture' ? 'capture-tab-icon' : ''}><Icon size={id === 'capture' ? 23 : 19} strokeWidth={view === id ? 2.4 : 1.8} /></span>
             <span>{label}</span>
-          </button>
+          </motion.button>
         ))}
       </nav>
     </div>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, Info, Lightbulb, LockKeyhole, Sparkles } from 'lucide-react'
+import { AnimatePresence, motion } from 'motion/react'
 import { calculateScore, createAchievement, generateOutput, getMissingPrompts, splitList } from '../lib/achievement-engine'
 import type { Achievement, AchievementDraft, Ownership, Visibility } from '../types'
 import { ScoreRing } from '../components/ScoreRing'
@@ -87,49 +88,50 @@ export function CaptureView({ onSave, onCancel, initialAchievement }: CaptureVie
           {[1, 2, 3].map((item) => (
             <span key={item} className={step >= item ? 'active' : ''}>
               <i>{step > item ? <Check size={11} /> : item}</i>
-              <small>{item === 1 ? 'الأساس' : item === 2 ? 'الأثر' : 'المراجعة'}</small>
+              <small>{item === 1 ? 'التعريف' : item === 2 ? 'التفاصيل' : 'المراجعة'}</small>
             </span>
           ))}
         </div>
-        <span className="auto-save"><i /> محفوظ محليًا</span>
+        <span className="auto-save"><i /> محفوظ على جهازك</span>
       </header>
 
       <div className="capture-layout">
         <section className="capture-form">
+          <AnimatePresence mode="wait" initial={false}>
           {step === 1 && (
-            <div className="form-step">
-              <span className="step-kicker">01 — {initialAchievement ? 'راجع الأساس' : 'التقط الفكرة'}</span>
-              <h1>{initialAchievement ? 'خلّ الإنجاز أوضح.' : 'وش أنجزت؟'}</h1>
-              <p className="step-intro">لا تحاول تصيغها باحتراف. اكتب الشيء كما تشرحه لصديق، وإحنا نرتبه بعدين.</p>
+            <motion.div key="capture-step-1" className="form-step" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -18 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}>
+              <span className="step-kicker">01 — {initialAchievement ? 'مراجعة الإنجاز' : 'تعريف الإنجاز'}</span>
+              <h1>{initialAchievement ? 'راجع تفاصيل الإنجاز.' : 'ابدأ بما أنجزته.'}</h1>
+              <p className="step-intro">اكتب الإنجاز كما حدث. لا تحتاج إلى صياغة احترافية الآن؛ سنرتّب التفاصيل في الخطوات التالية.</p>
 
               <label className="field large-field">
-                <span>عنوان سريع للإنجاز <b>مطلوب</b></span>
+                <span>ما الإنجاز؟ <b>مطلوب</b></span>
                 <input
                   autoFocus
                   value={draft.title}
                   onChange={(event) => setField('title', event.target.value)}
-                  placeholder="مثال: أسست مكتبة موشن للفريق"
+                  placeholder="مثال: أنشأت مكتبة موشن موحّدة للفريق"
                 />
               </label>
 
               <div className="field-grid two">
                 <label className="field">
-                  <span>المشروع</span>
+                  <span>اسم المشروع</span>
                   <input value={draft.project} onChange={(event) => setField('project', event.target.value)} placeholder="اسم المبادرة أو المشروع" />
                 </label>
                 <label className="field">
-                  <span>الجهة</span>
+                  <span>الجهة أو العميل</span>
                   <input value={draft.company} onChange={(event) => setField('company', event.target.value)} placeholder="شركة، عميل، أو مشروع شخصي" />
                 </label>
               </div>
 
               <div className="field-grid two">
                 <label className="field">
-                  <span>متى؟</span>
+                  <span>تاريخ الإنجاز</span>
                   <input type="month" value={draft.date} onChange={(event) => setField('date', event.target.value)} />
                 </label>
                 <label className="field">
-                  <span>مستوى الملكية</span>
+                  <span>دورك في الإنجاز</span>
                   <select value={draft.ownership} onChange={(event) => setField('ownership', event.target.value as Ownership)}>
                     {ownershipOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                   </select>
@@ -137,48 +139,48 @@ export function CaptureView({ onSave, onCancel, initialAchievement }: CaptureVie
               </div>
 
               <label className="field textarea-field">
-                <span>كيف كان الوضع قبل تدخلك؟</span>
-                <textarea value={draft.context} onChange={(event) => setField('context', event.target.value)} placeholder="كانت المشكلة أو الفرصة..." rows={5} />
-                <small><Lightbulb size={14} /> ركّز على المشكلة، مو على قائمة المهام.</small>
+                <span>ما المشكلة أو الفرصة؟</span>
+                <textarea value={draft.context} onChange={(event) => setField('context', event.target.value)} placeholder="وضّح الوضع قبل بدء العمل، وما الذي كان يحتاج إلى تغيير..." rows={5} />
+                <small><Lightbulb size={14} /> ركّز على الوضع السابق، وليس على قائمة المهام.</small>
               </label>
-            </div>
+            </motion.div>
           )}
 
           {step === 2 && (
-            <div className="form-step">
-              <span className="step-kicker">02 — اكشف الأثر</span>
-              <h1>خلّ القيمة واضحة.</h1>
-              <p className="step-intro">هنا نفصل بين «كنت مشغول» و«صنعت فرقًا». اكتب الحقائق فقط؛ المبالغة ممنوعة.</p>
+            <motion.div key="capture-step-2" className="form-step" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -18 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}>
+              <span className="step-kicker">02 — مساهمتك وأثرها</span>
+              <h1>وضّح دورك والنتيجة.</h1>
+              <p className="step-intro">حدّد ما نفّذته بنفسك، ثم اكتب ما تغيّر بعده. كلما كانت التفاصيل أدق، كانت الصياغة النهائية أقوى.</p>
 
               <label className="field textarea-field">
-                <span>وش سويت أنت تحديدًا؟ <b>كل إجراء في سطر</b></span>
+                <span>ما الذي نفّذته أنت؟ <b>إجراء واحد في كل سطر</b></span>
                 <textarea value={draft.actionsText} onChange={(event) => setField('actionsText', event.target.value)} placeholder={'صممت النظام الأساسي\nبنيت القوالب\nقدمت المشروع للإدارة'} rows={6} />
-                <small>{splitList(draft.actionsText).length} إجراءات مسجلة</small>
+                <small>{splitList(draft.actionsText).length} {splitList(draft.actionsText).length === 1 ? 'إجراء مسجّل' : 'إجراءات مسجّلة'}</small>
               </label>
 
               <label className="field textarea-field">
-                <span>وش تغيّر بعد شغلك؟</span>
-                <textarea value={draft.result} onChange={(event) => setField('result', event.target.value)} placeholder="وفّر وقتًا، حسّن الجودة، حصل على اعتماد، أو استخدمه عدد من الأشخاص..." rows={4} />
-                <small><Info size={14} /> إذا ما عندك رقم، اكتب نتيجة نوعية حقيقية. لا نخترع.</small>
+                <span>ما النتيجة؟</span>
+                <textarea value={draft.result} onChange={(event) => setField('result', event.target.value)} placeholder="مثال: خفّض وقت الإنتاج، أو رفع جودة التسليم، أو حصل على اعتماد العميل..." rows={4} />
+                <small><Info size={14} /> لا يوجد رقم؟ اكتب نتيجة نوعية صحيحة، ولن نخترع رقمًا.</small>
               </label>
 
               <label className="field textarea-field">
-                <span>الأدلة <b>كل دليل في سطر</b></span>
+                <span>ما الدليل المتاح؟ <b>دليل واحد في كل سطر</b></span>
                 <textarea value={draft.evidenceText} onChange={(event) => setField('evidenceText', event.target.value)} placeholder={'رابط المشروع\nعرض الاعتماد\nرسالة شكر من العميل'} rows={4} />
               </label>
 
               <label className="field">
-                <span>المهارات</span>
-                <input value={draft.skillsText} onChange={(event) => setField('skillsText', event.target.value)} placeholder="Creative Direction، 3D، AR/VR" />
+                <span>المهارات التي استخدمتها</span>
+                <input value={draft.skillsText} onChange={(event) => setField('skillsText', event.target.value)} placeholder="الإخراج الإبداعي، تصميم الحركة، ثلاثي الأبعاد" />
               </label>
 
               <div className="visibility-field">
-                <span>خصوصية الإنجاز</span>
+                <span>من يمكنه الاطلاع؟</span>
                 <div>
                   {([
-                    ['private', 'خاص', 'يبقى لك فقط'],
+                    ['private', 'خاص', 'محفوظ لك فقط'],
                     ['shareable', 'قابل للمشاركة', 'يمكن استخدام تفاصيله'],
-                    ['anonymized', 'مجهّل', 'نخفي أسماء الجهات'],
+                    ['anonymized', 'إخفاء الأسماء', 'تُخفى أسماء الجهات'],
                   ] as [Visibility, string, string][]).map(([value, label, hint]) => (
                     <button key={value} className={draft.visibility === value ? 'active' : ''} onClick={() => setField('visibility', value)}>
                       <i>{draft.visibility === value && <Check size={12} />}</i>
@@ -187,21 +189,21 @@ export function CaptureView({ onSave, onCancel, initialAchievement }: CaptureVie
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {step === 3 && (
-            <div className="form-step review-step">
-              <span className="step-kicker">03 — راجع القوة</span>
-              <h1>الإنجاز صار له وزن.</h1>
-              <p className="step-intro">هذه قراءة صريحة لجاهزيته. النقص مو مشكلة؛ المهم نعرفه بدل ما نغطيه بكلام منمّق.</p>
+            <motion.div key="capture-step-3" className="form-step review-step" initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -18 }} transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}>
+              <span className="step-kicker">03 — مراجعة الجاهزية</span>
+              <h1>هل الإنجاز جاهز للاستخدام؟</h1>
+              <p className="step-intro">هذه قراءة مباشرة لما وثّقته. يمكنك حفظ الإنجاز الآن، أو استكمال النقاط المقترحة لرفع جاهزيته.</p>
 
               <div className="review-summary">
                 <ScoreRing score={score} size="large" />
                 <div>
                   <span>درجة الجاهزية</span>
-                  <h2>{score >= 75 ? 'جاهز للاستخدام' : score >= 50 ? 'قوي، ويحتاج تدعيمًا' : 'البداية موجودة'}</h2>
-                  <p>{score >= 75 ? 'تقدر تستخدمه الآن، ومع كل دليل إضافي يصير أقوى.' : 'أكمل النقاط المقترحة حتى لا يضيع أثر الشغل داخل وصف عام.'}</p>
+                  <h2>{score >= 75 ? 'جاهز للاستخدام' : score >= 50 ? 'يحتاج إلى بعض التفاصيل' : 'يحتاج إلى توثيق أكبر'}</h2>
+                  <p>{score >= 75 ? 'يمكنك استخدامه الآن في سيرتك الذاتية أو ملف أعمالك.' : 'استكمل النقاط المقترحة حتى يظهر دورك وأثر العمل بوضوح.'}</p>
                 </div>
               </div>
 
@@ -213,7 +215,7 @@ export function CaptureView({ onSave, onCancel, initialAchievement }: CaptureVie
 
               <div className="missing-list">
                 <div className="section-heading compact-heading">
-                  <div><span className="eyebrow">فجوات التوثيق</span><h2>{prompts.length ? `${prompts.length} فرص لتقوية الإنجاز` : 'مكتمل وواضح'}</h2></div>
+                  <div><span className="eyebrow">ما الذي ينقص؟</span><h2>{prompts.length ? `${prompts.length} ${prompts.length === 1 ? 'نقطة مقترحة' : 'نقاط مقترحة'}` : 'التفاصيل الأساسية مكتملة'}</h2></div>
                 </div>
                 {prompts.length ? prompts.map((prompt) => (
                   <button key={`${prompt.field}-${prompt.title}`} onClick={() => setStep(prompt.field === 'context' ? 1 : 2)}>
@@ -221,13 +223,14 @@ export function CaptureView({ onSave, onCancel, initialAchievement }: CaptureVie
                     <ChevronLeft size={17} />
                   </button>
                 )) : (
-                  <div className="complete-message"><Check size={17} /> لا توجد فجوات أساسية.</div>
+                  <div className="complete-message"><Check size={17} /> لا توجد نقاط أساسية ناقصة.</div>
                 )}
               </div>
 
-              <div className="privacy-confirm"><LockKeyhole size={17} /><span><strong>بياناتك باقية على جهازك</strong><small>لا يوجد API أو سيرفر يقرأ محتوى الإنجاز.</small></span></div>
-            </div>
+              <div className="privacy-confirm"><LockKeyhole size={17} /><span><strong>محفوظ على جهازك</strong><small>هذه النسخة لا ترسل المحتوى إلى أي خدمة خارجية.</small></span></div>
+            </motion.div>
           )}
+          </AnimatePresence>
 
           <footer className="capture-actions">
             <button className="button secondary" onClick={goBack}><ArrowRight size={17} /> {step === 1 ? 'إلغاء' : 'السابق'}</button>
@@ -241,7 +244,7 @@ export function CaptureView({ onSave, onCancel, initialAchievement }: CaptureVie
 
         <aside className="capture-side-panel">
           <div className="side-score"><ScoreRing score={score} size="medium" /></div>
-          <span className="eyebrow">قراءة لحظية</span>
+          <span className="eyebrow">تقييم مباشر</span>
           <h3>{draft.title || 'إنجازك القادم'}</h3>
           <div className="criteria-list">
             <span className="done"><i><Check size={10} /></i> ملكية الدور واضحة <b>20</b></span>
@@ -250,7 +253,7 @@ export function CaptureView({ onSave, onCancel, initialAchievement }: CaptureVie
             <span className={draft.result.trim().length >= 20 ? 'done' : ''}><i>{draft.result.trim().length >= 20 && <Check size={10} />}</i> نتيجة موثقة <b>25</b></span>
             <span className={splitList(draft.evidenceText).length > 0 ? 'done' : ''}><i>{splitList(draft.evidenceText).length > 0 && <Check size={10} />}</i> دليل داعم <b>25</b></span>
           </div>
-          <div className="side-tip"><Lightbulb size={18} /><p>أقوى إنجاز مو الأطول؛ هو اللي يوضح <strong>دورك والفرق الذي حدث.</strong></p></div>
+          <div className="side-tip"><Lightbulb size={18} /><p>أقوى الإنجازات هي التي توضّح <strong>مسؤوليتك والنتيجة التي حققتها.</strong></p></div>
         </aside>
       </div>
     </div>

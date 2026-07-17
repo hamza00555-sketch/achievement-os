@@ -31,4 +31,18 @@ describe('achievement engine', () => {
   it('marks a strong evidenced achievement as ready', () => {
     expect(createAchievement(strongDraft, 'test-id').status).toBe('ready')
   })
+
+  it('keeps Arabic output grammatical when the result is a complete sentence', () => {
+    const achievement = createAchievement({
+      ...strongDraft,
+      result: 'أصبحت التجربة متاحة مباشرة من الجوال',
+    }, 'grammar-test')
+
+    const cv = generateOutput(achievement, 'cv').ar
+    const portfolio = generateOutput(achievement, 'portfolio').ar
+
+    expect(cv).toContain('وكانت النتيجة: أصبحت التجربة')
+    expect(cv).not.toContain('عن أصبحت')
+    expect(portfolio).not.toContain('إلى أصبحت')
+  })
 })
