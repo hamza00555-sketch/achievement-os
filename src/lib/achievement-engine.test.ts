@@ -42,6 +42,7 @@ describe('achievement engine', () => {
     const portfolio = generateOutput(achievement, 'portfolio').ar
 
     expect(cv).toContain('وكانت النتيجة: أصبحت التجربة')
+    expect(cv).not.toContain('من خلال صممت')
     expect(cv).not.toContain('عن أصبحت')
     expect(portfolio).not.toContain('إلى أصبحت')
   })

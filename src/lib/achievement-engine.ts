@@ -156,12 +156,12 @@ export function generateOutput(achievement: Achievement, type: OutputType): Gene
   const outputs: Record<OutputType, GeneratedOutput> = {
     cv: {
       label: 'سطر للسيرة الذاتية',
-      ar: `${owner.arVerb} ${achievement.title}${projectScopeAr} من خلال ${actionsAr}${resultAr ? `؛ وكانت النتيجة: ${resultAr}` : ''}.`,
+      ar: `${owner.arVerb} «${achievement.title}»${projectScopeAr}؛ ${actionsAr}${resultAr ? `؛ وكانت النتيجة: ${resultAr}` : ''}.`,
       en: `${owner.enVerb} ${achievement.title}${projectScopeEn} by ${actionsEn}.${resultEn ? ` Outcome: ${resultEn}.` : ''}`,
     },
     executive: {
       label: 'صياغة تنفيذية',
-      ar: `${owner.arVerb} مبادرة «${achievement.title}»${projectScopeAr} لمعالجة ${contextAr}. شمل عملي ${actionsAr}.${resultAr ? ` وكانت النتيجة: ${resultAr}.` : ''}`,
+      ar: `${owner.arVerb} مبادرة «${achievement.title}»${projectScopeAr} لمعالجة ${contextAr}. وعلى مستوى التنفيذ: ${actionsAr}.${resultAr ? ` وكانت النتيجة: ${resultAr}.` : ''}`,
       en: `${owner.enVerb} the ${achievement.title} initiative${projectScopeEn} to address ${contextEn}. My work included ${actionsEn}.${resultEn ? ` Outcome: ${resultEn}.` : ''}`,
     },
     promotion: {
@@ -171,7 +171,7 @@ export function generateOutput(achievement: Achievement, type: OutputType): Gene
     },
     portfolio: {
       label: 'مقدمة للبورتفوليو',
-      ar: `بدأ مشروع «${achievement.title}»${projectScopeAr} لمواجهة ${contextAr}. كان دوري ${owner.arRole}، وشمل عملي ${actionsAr}.${resultAr ? ` وكانت النتيجة: ${resultAr}.` : ' ولا تزال النتيجة بحاجة إلى توثيق.'}`,
+      ar: `بدأ مشروع «${achievement.title}»${projectScopeAr} لمواجهة ${contextAr}. كان دوري ${owner.arRole}. وعلى مستوى التنفيذ: ${actionsAr}.${resultAr ? ` وكانت النتيجة: ${resultAr}.` : ' ولا تزال النتيجة بحاجة إلى توثيق.'}`,
       en: `${achievement.title} began as a response to ${contextEn}. My role involved ${owner.enRole}, including ${actionsEn}.${resultEn ? ` The project resulted in ${resultEn}.` : ' The outcome still needs to be documented.'}`,
     },
     interview: {
