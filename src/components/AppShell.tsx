@@ -93,7 +93,13 @@ export function AppShell({ view, onNavigate, children }: AppShellProps) {
 
       <header className="mobile-header">
         <button className="brand compact" onClick={() => onNavigate('dashboard')}>
-          <span className="brand-mark"><Sparkles size={17} /></span>
+          <motion.span
+            className="brand-mark"
+            animate={{ rotate: [-2, 2, -2], y: [0, -2, 0] }}
+            transition={{ duration: 4.6, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <Sparkles size={17} />
+          </motion.span>
           <strong>أثَر</strong>
         </button>
         <span className="mobile-local"><i /> حفظ محلي</span>
@@ -110,7 +116,19 @@ export function AppShell({ view, onNavigate, children }: AppShellProps) {
             whileTap={{ scale: 0.9 }}
           >
             {view === id && id !== 'capture' && <motion.i className="mobile-active-pill" layoutId="mobile-nav-active" />}
-            <span className={id === 'capture' ? 'capture-tab-icon' : ''}><Icon size={id === 'capture' ? 23 : 19} strokeWidth={view === id ? 2.4 : 1.8} /></span>
+            <motion.span
+              className={id === 'capture' ? 'capture-tab-icon' : 'mobile-nav-icon'}
+              animate={id === 'capture'
+                ? { y: [0, -3, 0], rotate: [0, -3, 3, 0] }
+                : view === id
+                  ? { y: -3, scale: 1.12, rotate: -4 }
+                  : { y: 0, scale: 1, rotate: 0 }}
+              transition={id === 'capture'
+                ? { duration: 2.8, repeat: Infinity, repeatDelay: 1.4, ease: 'easeInOut' }
+                : { type: 'spring', stiffness: 420, damping: 25 }}
+            >
+              <Icon size={id === 'capture' ? 23 : 19} strokeWidth={view === id ? 2.4 : 1.8} />
+            </motion.span>
             <span>{label}</span>
           </motion.button>
         ))}

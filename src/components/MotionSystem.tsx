@@ -17,10 +17,10 @@ export function PageTransition({ children, viewKey }: PageTransitionProps) {
     <motion.div
       key={viewKey}
       className="page-transition"
-      initial={{ opacity: 0, y: 8, filter: 'blur(3px)' }}
-      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-      exit={{ opacity: 0, y: -5, filter: 'blur(2px)' }}
-      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, x: -16, y: 6, scale: 0.995, filter: 'blur(5px)' }}
+      animate={{ opacity: 1, x: 0, y: 0, scale: 1, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, x: 12, y: -3, scale: 0.998, filter: 'blur(3px)' }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.div>
@@ -81,6 +81,8 @@ export function KineticArtifact({ total, score }: KineticArtifactProps) {
       <motion.div
         className="artifact-stage"
         style={{ rotateX: reducedMotion ? 0 : rotateX, rotateY: reducedMotion ? 0 : rotateY }}
+        animate={reducedMotion ? undefined : { y: [0, -7, 0] }}
+        transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
       >
         <motion.div
           className="artifact-halo halo-a"
@@ -92,7 +94,11 @@ export function KineticArtifact({ total, score }: KineticArtifactProps) {
           animate={reducedMotion ? undefined : { rotate: -360 }}
           transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
         />
-        <div className="artifact-orb">
+        <motion.div
+          className="artifact-orb"
+          animate={reducedMotion ? undefined : { rotate: [0, 3, 0, -3, 0], scale: [1, 1.025, 1] }}
+          transition={{ duration: 7.2, repeat: Infinity, ease: 'easeInOut' }}
+        >
           <span className="orb-glow" />
           <span className="orb-grid" />
           <motion.span
@@ -103,7 +109,7 @@ export function KineticArtifact({ total, score }: KineticArtifactProps) {
             <strong>{total}</strong>
             <small>في رصيدك</small>
           </motion.span>
-        </div>
+        </motion.div>
         <motion.div
           className="artifact-chip chip-score"
           style={{ x: reducedMotion ? 0 : accentX, y: reducedMotion ? 0 : accentY }}
